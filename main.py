@@ -69,7 +69,7 @@ async def query_openrouter(prompt: str) -> str:
     
     # Выберите модель (можно изменить на другую)
     data = {
-        "model": "openai/gpt-3.5-turbo",  # Бесплатная модель
+        "model": "arcee-ai/trinity-large-preview:free",  # Бесплатная модель
         "messages": [
             {"role": "user", "content": prompt}
         ],
