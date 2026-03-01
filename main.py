@@ -127,11 +127,7 @@ async def query_openrouter(prompt: str) -> str:
     
     # Пробуем разные модели, если первая не сработает
     models_to_try = [
-        "openai/gpt-3.5-turbo",
-        "anthropic/claude-3-haiku",
-        "meta-llama/llama-3-8b-instruct",
-        "mistralai/mistral-7b-instruct",
-        "google/gemini-pro"
+        "arcee-ai/trinity-large-preview:free"
     ]
     
     for model in models_to_try:
