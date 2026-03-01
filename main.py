@@ -8,6 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.client.session.aiohttp import AiohttpSession
+from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,21 +55,36 @@ async def handle_ai_request(message: types.Message, state: FSMContext):
     await message.answer(answer, parse_mode="Markdown")
     await state.clear()
 
+async def handle_hf_healthcheck(request):
+    return web.Response(text="I am alive")
+
+
 async def main():
-    # ПРОКСИ — попытка обойти блокировку DNS на HF
-    # Если этот прокси умрет, можно найти другой на 'free-proxy-list.net'
     PROXY_URL = "http://167.71.233.15:8080" 
-    
     logger.info(f"Запуск через прокси {PROXY_URL}...")
+    
+    # Настройка бота
     session = AiohttpSession(proxy=PROXY_URL)
     bot = Bot(token=TG_TOKEN, session=session)
     
+    # Настройка веб-сервера для Hugging Face (чтобы не было SIGTERM)
+    app = web.Application()
+    app.router.add_get("/", handle_hf_healthcheck)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 7860) # Порт 7860 обязателен для HF
+    
+    await site.start()
+    logger.info("Веб-сервер запущен на порту 7860")
+
     try:
+        # Запуск поллинга
         await dp.start_polling(bot)
     except Exception as e:
-        logger.error(f"Ошибка при поллинге: {e}")
+        logger.error(f"Ошибка: {e}")
     finally:
         await bot.session.close()
+        await runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())
