@@ -41,7 +41,7 @@ async def get_openrouter_response(user_text):
         "HTTP-Referer": "https://huggingface.co", # Для OpenRouter
     }
     data = {
-        "model": "google/gemini-2.0-flash-001", 
+        "model": "arcee-ai/trinity-large-preview:free", 
         "messages": [
             {"role": "system", "content": "Ты профессиональный программист. Пиши чистый код с комментариями. Используй Markdown для оформления."},
             {"role": "user", "content": user_text}
