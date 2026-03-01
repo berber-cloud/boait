@@ -1,34 +1,32 @@
 import os
 import asyncio
 import logging
+import socket  # <-- ДОБАВЬ ЭТУ СТРОКУ
+import aiohttp
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.client.session.aiohttp import AiohttpSession
-import aiohttp
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Получаем токены из Secrets (Hugging Face Settings -> Variables and secrets)
+# Получаем токены
 TG_TOKEN = os.getenv("TG_TOKEN")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# Проверка наличия ключей перед запуском
-if not TG_TOKEN:
-    logger.error("Критическая ошибка: TG_TOKEN не найден в Secrets!")
-if not OPENROUTER_API_KEY:
-    logger.error("Критическая ошибка: OPENROUTER_API_KEY не найден в Secrets!")
+# Настройка сессии для обхода ошибок DNS
+connector = aiohttp.TCPConnector(family=socket.AF_INET) # Теперь socket будет виден
+session = AiohttpSession(connector=connector)
 
-# Инициализация бота с явным указанием сессии (помогает при сетевых сбоях)
-# Форсируем IPv4 для обхода ошибок DNS
-connector = aiohttp.TCPConnector(family=socket.AF_INET)
-session = AiohttpSession(proxy=None, connector=connector)
 bot = Bot(token=TG_TOKEN, session=session)
 dp = Dispatcher()
+
+# ... дальше весь остальной код (состояния, хендлеры и т.д.)
+
 
 # Состояния FSM
 class BotStates(StatesGroup):
