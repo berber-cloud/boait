@@ -24,7 +24,9 @@ if not OPENROUTER_API_KEY:
     logger.error("Критическая ошибка: OPENROUTER_API_KEY не найден в Secrets!")
 
 # Инициализация бота с явным указанием сессии (помогает при сетевых сбоях)
-session = AiohttpSession()
+# Форсируем IPv4 для обхода ошибок DNS
+connector = aiohttp.TCPConnector(family=socket.AF_INET)
+session = AiohttpSession(proxy=None, connector=connector)
 bot = Bot(token=TG_TOKEN, session=session)
 dp = Dispatcher()
 
