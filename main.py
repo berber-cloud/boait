@@ -60,7 +60,7 @@ async def handle_hf_healthcheck(request):
 
 
 async def main():
-    PROXY_URL = "http://167.71.233.15:8080" 
+    PROXY_URL = "http://104.230.113.255:80" 
     logger.info(f"Запуск через прокси {PROXY_URL}...")
     
     # Настройка бота
